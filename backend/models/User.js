@@ -20,6 +20,21 @@ const userSchema = new mongoose.Schema(
       type: String,
       required: true,
     },
+
+    avatar: {
+      type: String,
+      default: "",
+    },
+
+    resetPasswordToken: {
+      type: String,
+      default: null,
+    },
+
+    resetPasswordExpire: {
+      type: Date,
+      default: null,
+    },
   },
   {
     timestamps: true,
