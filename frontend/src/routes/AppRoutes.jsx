@@ -1,36 +1,86 @@
 import { BrowserRouter, Routes, Route } from "react-router-dom";
 
-import Login from "../pages/Login";
-import Register from "../pages/Register";
-import Home from "../pages/Home";
-import Search from "../pages/Search";
-import MovieDetails from "../pages/MovieDetails";
-import Favorites from "../pages/Favorites";
-import Watchlist from "../pages/Watchlist";
+import Login from "../pages/Login.jsx";
+import Register from "../pages/Register.jsx";
+import Home from "../pages/Home.jsx";
+import Search from "../pages/Search.jsx";
+import MovieDetails from "../pages/MovieDetails.jsx";
+import Watchlist from "../pages/Watchlist.jsx";
 import Profile from "../pages/Profile";
-import AIRecommendations from "../pages/AIRecommendations";
+import Favorites from "../pages/Favorites";
 import NotFound from "../pages/NotFound";
+import AIRecommendations from "../pages/AIRecommendations";
+import Notifications from "../pages/Notifications";
 
-const AppRoutes = () => {
+
+function AppRoutes() {
+
   return (
+
     <BrowserRouter>
+
       <Routes>
-        {/* Temporary: Login as landing page */}
-        <Route path="/" element={<Login />} />
 
-        <Route path="/home" element={<Home />} />
-        <Route path="/register" element={<Register />} />
-        <Route path="/search" element={<Search />} />
-        <Route path="/movie/:id" element={<MovieDetails />} />
-        <Route path="/favorites" element={<Favorites />} />
-        <Route path="/watchlist" element={<Watchlist />} />
-        <Route path="/profile" element={<Profile />} />
-        <Route path="/ai" element={<AIRecommendations />} />
+        <Route
+          path="/"
+          element={<Login />}
+        />
 
-        <Route path="*" element={<NotFound />} />
+
+        <Route
+          path="/register"
+          element={<Register />}
+        />
+
+
+        <Route
+          path="/home"
+          element={<Home />}
+        />
+
+
+        <Route
+          path="/search"
+          element={<Search />}
+        />
+
+
+        <Route
+          path="/movie/:id"
+          element={<MovieDetails />}
+        />
+
+
+        <Route
+          path="/watchlist"
+          element={<Watchlist />}
+        />
+        <Route
+  path="/profile"
+  element={<Profile />}
+/>
+<Route
+ path="/favorites"
+ element={<Favorites />}
+/>
+<Route path="*" element={<NotFound />} />
+<Route
+ path="/ai-recommendations"
+ element={<AIRecommendations />}
+/>
+<Route
+path="/notifications"
+element={<Notifications />}
+/>
+
+
       </Routes>
+
     </BrowserRouter>
+
   );
-};
+
+}
+
 
 export default AppRoutes;
