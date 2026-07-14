@@ -114,18 +114,28 @@ const getMovieTrailer = async (req, res) => {
   try {
     const { id } = req.params;
 
+    console.log("Movie ID:", id);
+
     const response = await tmdb.get(`/movie/${id}/videos`);
+
+    console.log("Videos:", response.data.results);
 
     const trailer = response.data.results.find(
       (video) =>
-        video.type === "Trailer" && video.site === "YouTube"
+        video.type === "Trailer" &&
+        video.site === "YouTube"
     );
 
     res.status(200).json({
       success: true,
       trailer: trailer || null,
     });
+
   } catch (error) {
+    console.log("ERROR:");
+    console.log(error.response?.data);
+    console.log(error.message);
+
     res.status(500).json({
       success: false,
       message: error.message,
@@ -206,15 +216,35 @@ const getMovieGenres = async (req, res) => {
 // Discover Movies
 const discoverMovies = async (req, res) => {
   try {
-    const { genre, year, rating, page = 1 } = req.query;
+    const {
+      genre,
+      language,
+      year,
+      rating,
+      sort_by = "popularity.desc",
+      page = 1,
+    } = req.query;
 
     const params = {
       page,
+      sort_by,
     };
 
-    if (genre) params.with_genres = genre;
-    if (year) params.primary_release_year = year;
-    if (rating) params["vote_average.gte"] = rating;
+    if (genre && genre !== "All") {
+      params.with_genres = genre;
+    }
+
+    if (language && language !== "all") {
+      params.with_original_language = language;
+    }
+
+    if (year) {
+      params.primary_release_year = year;
+    }
+
+    if (rating) {
+      params["vote_average.gte"] = rating;
+    }
 
     const response = await tmdb.get("/discover/movie", {
       params,
@@ -224,12 +254,84 @@ const discoverMovies = async (req, res) => {
       success: true,
       results: response.data.results,
     });
+
   } catch (error) {
+
     res.status(500).json({
       success: false,
       message: error.message,
     });
+
   }
+};
+// Release Status
+const getMovieReleaseStatus = async (req,res)=>{
+  try{
+
+    const {id}=req.params;
+
+    const response = await tmdb.get(
+      `/movie/${id}`
+    );
+
+    res.status(200).json({
+      success:true,
+      status:response.data.status,
+      release_date:response.data.release_date
+    });
+
+
+  }catch(error){
+
+    res.status(500).json({
+      success:false,
+      message:error.message
+    });
+
+  }
+};
+
+
+
+// OTT Platforms
+const getWatchProviders = async(req,res)=>{
+
+try{
+
+const {id}=req.params;
+
+
+const response = await tmdb.get(
+`/movie/${id}/watch/providers`
+);
+
+
+const india =
+response.data.results.IN;
+
+
+
+res.status(200).json({
+
+success:true,
+
+providers:
+india || null
+
+});
+
+
+}catch(error){
+
+res.status(500).json({
+
+success:false,
+message:error.message
+
+});
+
+}
+
 };
 module.exports = {
   getTrendingMovies,
@@ -244,4 +346,6 @@ getMovieCast,
 getMovieReviews,
 getMovieGenres,
 discoverMovies,
+getMovieReleaseStatus,
+getWatchProviders,
 };

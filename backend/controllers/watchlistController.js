@@ -1,4 +1,5 @@
 const Watchlist = require("../models/Watchlist");
+const Notification = require("../models/Notification");
 
 // =======================
 // ADD TO WATCHLIST
@@ -35,6 +36,17 @@ const addToWatchlist = async (req, res) => {
       releaseDate,
       rating,
     });
+    await Notification.create({
+
+  user:req.user.id,
+
+  title:"Watchlist Updated",
+
+  message:`${title} added to your watchlist`,
+
+  type:"watchlist"
+
+});
 
     res.status(201).json({
       success: true,

@@ -1,115 +1,130 @@
-
 import {
   FaBell,
   FaFilm,
   FaRobot,
   FaHeart,
+  FaBookmark,
   FaTimes
 } from "react-icons/fa";
-
-import { useState } from "react";
-
+import { useState, useEffect } from "react";
+import { useNavigate } from "react-router-dom";
+import { FaArrowLeft } from "react-icons/fa";
+import axios from "axios";
 
 const Notifications = () => {
+const navigate = useNavigate();
+const [notifications,setNotifications] = useState([]);
 
+const getIcon = (type)=>{
 
-const [notifications,setNotifications] = useState([
+if(type==="movie")
+return <FaFilm/>;
 
-{
-id:1,
-icon:<FaFilm/>,
-title:"New Movie Added",
-message:"Avengers Endgame is now available on CineX."
-},
+if(type==="ai")
+return <FaRobot/>;
 
-{
-id:2,
-icon:<FaRobot/>,
-title:"AI Recommendation",
-message:"New movies are recommended based on your taste."
-},
+if(type==="favorite")
+return <FaHeart/>;
 
-{
-id:3,
-icon:<FaHeart/>,
-title:"Favourite Update",
-message:"Your favourite movies list has been updated."
+if(type==="watchlist")
+return <FaBookmark/>;
+
+return <FaBell/>;
+
+};
+
+useEffect(()=>{
+
+const fetchNotifications = async()=>{
+
+try{
+
+const res = await axios.get(
+"http://localhost:5000/api/notifications"
+);
+
+setNotifications(res.data);
+
+}
+catch(error){
+
+console.log(error);
+
 }
 
-]);
+};
+
+fetchNotifications();
+
+},[]);
+
+
 
 
 
 const removeNotification=(id)=>{
 
 setNotifications(
-
 notifications.filter(
-
-(item)=>item.id!==id
-
+(item)=>item._id!==id
 )
-
 );
 
 };
 
 
-
 return(
 
-<div
-
-className="
+<div className="
 min-h-screen
 bg-[#141414]
 text-white
 px-10
 pt-28
-"
-
->
-
-
-<div
-
+">
+<button
+onClick={()=>navigate(-1)}
 className="
+mb-6
+flex
+items-center
+gap-3
+bg-white/10
+px-5
+py-3
+rounded-xl
+hover:bg-[#E50914]
+transition
+"
+>
+<FaArrowLeft/>
+Back
+</button>
+
+<div className="
 flex
 items-center
 gap-4
 mb-10
-"
-
->
-
+">
 
 <FaBell
-
 className="
 text-[#E50914]
 text-5xl
 "
-
 />
 
-
-<h1
-
-className="
+<h1 className="
 text-5xl
 font-extrabold
-"
-
->
+">
 
 Notifications
 
 </h1>
 
-
 </div>
-
-
 
 
 {
@@ -118,16 +133,12 @@ notifications.length===0 ?
 
 (
 
-<div
-
-className="
+<div className="
 text-center
 text-gray-400
 text-2xl
 mt-20
-"
-
->
+">
 
 No New Notifications 🔔
 
@@ -139,25 +150,17 @@ No New Notifications 🔔
 
 (
 
-<div
-
-className="
+<div className="
 max-w-4xl
 space-y-5
-"
-
->
-
+">
 
 {
 
 notifications.map((notification)=>(
 
-
 <div
-
-key={notification.id}
-
+key={notification._id}
 className="
 flex
 items-center
@@ -168,87 +171,57 @@ rounded-2xl
 hover:bg-[#2d2d2d]
 transition
 "
-
 >
 
-
-<div
-
-className="
+<div className="
 flex
 items-center
 gap-5
-"
+">
 
->
-
-
-<div
-
-className="
+<div className="
 text-[#E50914]
 text-3xl
-"
+">
 
->
-
-{notification.icon}
+{getIcon(notification.type)}
 
 </div>
 
 
-
 <div>
 
-
-<h2
-
-className="
+<h2 className="
 text-xl
 font-bold
-"
-
->
+">
 
 {notification.title}
 
 </h2>
 
 
-
-<p
-
-className="
+<p className="
 text-gray-400
 mt-2
-"
-
->
+">
 
 {notification.message}
 
 </p>
 
-
 </div>
 
-
 </div>
-
-
-
 
 
 <button
-
-onClick={()=>removeNotification(notification.id)}
-
+onClick={()=>removeNotification(notification._id)}
 className="
 text-gray-400
 hover:text-red-500
 text-xl
 "
-
 >
 
 <FaTimes/>
@@ -256,31 +229,22 @@ text-xl
 </button>
 
 
-
 </div>
-
 
 ))
 
-
 }
 
-
-
 </div>
-
 
 )
 
 }
 
-
 </div>
 
 );
 
-
 };
-
 
 export default Notifications;

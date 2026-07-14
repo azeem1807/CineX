@@ -1,254 +1,30 @@
 import {
-  FaSearch,
-  FaBell,
-  FaUserCircle,
   FaPlay,
   FaPlus,
   FaStar,
 } from "react-icons/fa";
-
+import {useEffect,useState} from "react";
 import { useNavigate } from "react-router-dom";
-
-
-const movies = [
-
-{
-id:1,
-title:"RRR",
-rating:"8.0",
-year:"2022",
-runtime:"3h 7m",
-
-genre:[
-"Action",
-"Drama",
-"History"
-],
-
-image:
-"https://image.tmdb.org/t/p/w500/nEufeZlyAOLqO2brrs0yeF1lgXO.jpg",
-
-banner:
-"https://image.tmdb.org/t/p/original/8YFL5QQVPy3AgrEQxNYVSgiPEbe.jpg",
-
-description:
-"A fearless story of two revolutionaries who fight against British rule.",
-
-cast:[
-"N.T. Rama Rao Jr.",
-"Ram Charan",
-"Alia Bhatt"
-]
-
-},
-
-
-{
-id:2,
-title:"KGF Chapter 2",
-rating:"8.3",
-year:"2022",
-runtime:"2h 48m",
-
-genre:[
-"Action",
-"Crime"
-],
-
-image:
-"https://image.tmdb.org/t/p/w500/khNVygolU0TxLIDWff5tQlAhZ23.jpg",
-
-banner:
-"https://image.tmdb.org/t/p/original/khNVygolU0TxLIDWff5tQlAhZ23.jpg",
-
-description:
-"Rocky continues his journey to rule Kolar Gold Fields.",
-
-cast:[
-"Yash",
-"Sanjay Dutt",
-"Raveena Tandon"
-]
-
-},
-
-
-{
-id:3,
-title:"Jawan",
-rating:"7.8",
-year:"2023",
-runtime:"2h 49m",
-
-genre:[
-"Action",
-"Thriller"
-],
-
-image:
-"https://image.tmdb.org/t/p/w500/jFt1gS4BGHlK8xt76Y81Alp4dbt.jpg",
-
-banner:
-"https://image.tmdb.org/t/p/original/jFt1gS4BGHlK8xt76Y81Alp4dbt.jpg",
-
-description:
-"A man with a mysterious past fights injustice.",
-
-cast:[
-"Shah Rukh Khan",
-"Nayanthara"
-]
-
-},
-
-
-{
-id:4,
-title:"Spider-Man No Way Home",
-rating:"8.2",
-year:"2021",
-runtime:"2h 28m",
-
-genre:[
-"Action",
-"Adventure"
-],
-
-image:
-"https://image.tmdb.org/t/p/w500/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
-
-banner:
-"https://image.tmdb.org/t/p/original/1g0dhYtq4irTY1GPXvft6k4YLjm.jpg",
-
-description:
-"Spider-Man faces villains from different universes.",
-
-cast:[
-"Tom Holland",
-"Zendaya"
-]
-
-},{
-id:5,
-title:"Interstellar",
-rating:"8.7",
-year:"2014",
-runtime:"2h 49m",
-
-genre:[
-"Sci-Fi",
-"Adventure"
-],
-
-image:
-"https://image.tmdb.org/t/p/w500/gEU2QniE6E77NI6lCU6MxlNBvIx.jpg",
-
-banner:
-"https://image.tmdb.org/t/p/original/rAiYTfKGqDCRIIqo664sY9XZIvQ.jpg",
-
-description:
-"Explorers travel through space to find a new home for humanity.",
-
-cast:[
-"Matthew McConaughey",
-"Anne Hathaway"
-]
-
-},
-
-
-{
-id:6,
-title:"Inception",
-rating:"8.8",
-year:"2010",
-runtime:"2h 28m",
-
-genre:[
-"Action",
-"Sci-Fi"
-],
-
-image:
-"https://image.tmdb.org/t/p/w500/oYuLEt3zVCKq57qu2F8dT7NIa6f.jpg",
-
-banner:
-"https://image.tmdb.org/t/p/original/8ZTVqvKDQ8emSGUEMjsS4yHAwrp.jpg",
-
-description:
-"A thief enters dreams and steals secrets.",
-
-cast:[
-"Leonardo DiCaprio",
-"Tom Hardy"
-]
-
-},
-
-
-{
-id:7,
-title:"The Batman",
-rating:"7.8",
-year:"2022",
-runtime:"2h 56m",
-
-genre:[
-"Action",
-"Crime"
-],
-
-image:
-"https://image.tmdb.org/t/p/w500/74xTEgt7R36Fpooo50r9T25onhq.jpg",
-
-banner:
-"https://image.tmdb.org/t/p/original/74xTEgt7R36Fpooo50r9T25onhq.jpg",
-
-description:
-"Batman investigates corruption in Gotham.",
-
-cast:[
-"Robert Pattinson",
-"Zoë Kravitz"
-]
-
-},
-
-
-{
-id:8,
-title:"Doctor Strange",
-rating:"7.5",
-year:"2016",
-runtime:"1h 55m",
-
-genre:[
-"Fantasy",
-"Action"
-],
-
-image:
-"https://image.tmdb.org/t/p/w500/9Gtg2DzBhmYamXBS1hKAhiwbBKS.jpg",
-
-banner:
-"https://image.tmdb.org/t/p/original/9Gtg2DzBhmYamXBS1hKAhiwbBKS.jpg",
-
-description:
-"A surgeon discovers magical powers.",
-
-cast:[
-"Benedict Cumberbatch",
-"Rachel McAdams"
-]
-
-}
-
-];
-
-
-
-
-
+import Navbar from "../components/Navbar";
+import { useAuth } from "../context/AuthContext";
+import { genreMap, genres } from "../utils/genreMap";
+
+
+import {
+  discoverMovies,
+  getMovieTrailer
+} from "../services/tmdb";
+
+const languageMap = {
+  en:"English",
+  hi:"Hindi",
+  te:"Telugu",
+  ta:"Tamil",
+  ml:"Malayalam",
+  kn:"Kannada",
+  ja:"Japanese",
+  ko:"Korean",
+};
 const MovieCard = ({movie}) => {
 
 const navigate = useNavigate();
@@ -284,7 +60,7 @@ hover:shadow-2xl
 
 <img
 
-src={movie.image}
+src={`https://image.tmdb.org/t/p/w500${movie.poster_path}`}
 
 alt={movie.title}
 
@@ -311,8 +87,16 @@ font-bold
 {movie.title}
 
 </h3>
-
-
+<p className="text-sm text-gray-400 mt-1">
+{movie.release_date?.split("-")[0]}
+</p>
+<p className="
+text-sm
+text-gray-400
+mt-1
+">
+🌐 {languageMap[movie.original_language] || movie.original_language}
+</p>
 
 <div className="
 mt-2
@@ -324,10 +108,17 @@ text-yellow-400
 
 <FaStar/>
 
-{movie.rating}
+{movie.vote_average?.toFixed(1)}
 
 </div>
-
+<p className="text-sm text-gray-400 mt-2">
+{
+movie.genre_ids
+?.slice(0,2)
+.map(id=>genreMap[id])
+.join(" • ")
+}
+</p>
 
 </div>
 
@@ -340,7 +131,71 @@ text-yellow-400
 
 
 
+const MovieSkeleton = () => {
 
+
+return(
+
+<div
+className="
+bg-[#222]
+rounded-xl
+overflow-hidden
+animate-pulse
+"
+>
+
+<div
+className="
+h-80
+w-full
+bg-gray-700
+"
+/>
+
+
+<div className="p-4">
+
+<div
+className="
+h-5
+bg-gray-700
+rounded
+w-3/4
+mb-3
+"
+/>
+
+
+<div
+className="
+h-4
+bg-gray-700
+rounded
+w-1/3
+"
+/>
+
+
+<div
+className="
+h-4
+bg-gray-700
+rounded
+w-1/2
+mt-3
+"
+/>
+
+
+</div>
+
+
+</div>
+
+)
+
+};
 
 const MovieSection = ({title,data}) => {
 
@@ -374,6 +229,25 @@ gap-6
 
 
 {
+
+data.length === 0
+
+?
+
+Array(4)
+.fill(0)
+.map((_,index)=>(
+
+<MovieSkeleton
+
+key={index}
+
+/>
+
+))
+
+:
+
 data.map(movie=>(
 
 <MovieCard
@@ -385,7 +259,9 @@ movie={movie}
 />
 
 ))
+
 }
+
 
 
 </div>
@@ -396,10 +272,90 @@ movie={movie}
 
 )
 
-};const Home = () => {
+};
+const Home = () => {
 
 const navigate = useNavigate();
+const {user}=useAuth();
 
+const [trending,setTrending] = useState([]);
+
+const [popular,setPopular] = useState([]);
+
+const [topRated,setTopRated] = useState([]);
+const [selectedGenre, setSelectedGenre] = useState("");
+
+
+const [selectedLanguage, setSelectedLanguage] = useState("en");
+const languages = [
+  { name: "English", code: "en" },
+  { name: "Hindi", code: "hi" },
+  { name: "Telugu", code: "te" },
+  { name: "Tamil", code: "ta" },
+  { name: "Malayalam", code: "ml" },
+  { name: "Kannada", code: "kn" },
+  { name: "Japanese", code: "ja" },
+  { name: "Korean", code: "ko" }
+];
+
+useEffect(()=>{
+
+  if(user){
+
+    const savedGenre = localStorage.getItem(
+      `selectedGenre_${user.id}`
+    );
+
+
+    const savedLanguage = localStorage.getItem(
+      `selectedLanguage_${user.id}`
+    );
+
+
+    if(savedGenre){
+      setSelectedGenre(savedGenre);
+    }
+
+
+    if(savedLanguage){
+      setSelectedLanguage(savedLanguage);
+    }
+
+  }
+
+},[user]);
+
+useEffect(()=>{
+
+
+const loadMovies = async () => {
+
+  const trendingMovies = await discoverMovies({
+    genre: selectedGenre,
+    language: selectedLanguage,
+    sortBy: "popularity.desc",
+  });
+
+ const popularMovies = await discoverMovies({
+  genre: selectedGenre,
+  language: selectedLanguage,
+  sortBy: "vote_count.desc",
+});
+
+  const topMovies = await discoverMovies({
+    genre: selectedGenre,
+    language: selectedLanguage,
+    sortBy: "vote_average.desc",
+  });
+
+  setTrending(trendingMovies);
+  setPopular(popularMovies);
+  setTopRated(topMovies);
+
+};
+loadMovies();
+
+},[selectedGenre, selectedLanguage]);
 
 return(
 
@@ -409,201 +365,110 @@ bg-[#141414]
 text-white
 ">
 
-
-
-{/* NAVBAR */}
-
-
-
-<nav className="
-fixed
-top-0
-z-50
-w-full
-flex
-items-center
-justify-between
-bg-black/80
-px-10
-py-5
-backdrop-blur-lg
-">
-
-
-<h1 className="
-text-4xl
-font-extrabold
-text-[#E50914]
-">
-
-Cine
-
-<span className="text-white">
-X
-</span>
-
-</h1>
-
-
-
-
-
-<div className="
-hidden
-md:flex
-gap-8
-text-gray-300
-">
-
-
-<span>
-Home
-</span>
-
-
-<span>
-Movies
-</span>
-
-
-<span>
-Series
-</span>
-
-
-
-<span
-
-onClick={()=>navigate("/watchlist")}
-
-className="
-cursor-pointer
-hover:text-white
-">
-
-My List
-
-</span>
-
-
-<span
-
-onClick={()=>navigate("/favorites")}
-
-className="
-cursor-pointer
-hover:text-[#E50914]
-">
-
-Favorites
-
-</span>
-<span
-onClick={()=>navigate("/ai-recommendations")}
-className="
-cursor-pointer
-hover:text-white
-"
->
-AI Picks
-</span>
-
-
-</div>
-
-
-
-
-
-
-
-<div className="
-flex
-items-center
-gap-5
-">
-
-
-<div
-
-onClick={()=>navigate("/search")}
-
-className="
-flex
-items-center
-bg-[#333]
-rounded-lg
-px-4
-py-2
-cursor-pointer
-">
-
-
-<FaSearch className="text-gray-400"/>
-
-
-<input
-
-placeholder="Search"
-
-readOnly
-
-className="
-ml-3
-w-28
-bg-transparent
-outline-none
-"
-
+<Navbar
+ user={user}
 />
 
+<div className="px-10 py-5">
+
+  <div className="flex items-center justify-between mb-5">
+
+    <h2 className="text-lg font-semibold text-white">
+      🎭 Browse by Genre
+    </h2>
+
+    <div className="flex items-center gap-3">
+
+      <span className="text-sm text-gray-400">
+        🌐 Preferred Language
+      </span>
+
+      <select
+        value={selectedLanguage}
+  onChange={(e)=>{
+
+const value = e.target.value;
+
+setSelectedLanguage(value);
+
+if(user){
+localStorage.setItem(
+`selectedLanguage_${user.id}`,
+value
+);
+}
+
+}}
+        className="
+          bg-[#1c1c1c]
+          text-white
+          text-sm
+          px-4
+          py-2
+          rounded-lg
+          border
+          border-red-500/20
+          outline-none
+          hover:border-red-500/50
+          transition
+        "
+      >
+        {languages.map((language) => (
+          <option key={language.code} value={language.code}>
+            {language.name}
+          </option>
+        ))}
+      </select>
+
+    </div>
+
+  </div>
+
+  <div className="flex flex-wrap justify-center gap-3">
+
+    {genres.map((genre) => (
+
+  <button
+    key={genre.id}
+onClick={() => {
+
+setSelectedGenre(genre.id);
+
+if(user){
+
+localStorage.setItem(
+`selectedGenre_${user.id}`,
+genre.id
+);
+
+}
+
+}}
+    className={`
+      px-4
+      py-1.5
+      text-sm
+      font-medium
+      rounded-full
+      border
+      border-red-500/30
+      transition-all
+      duration-300
+      ${
+        selectedGenre === genre.id
+          ? "bg-red-600/20 text-red-300 border-red-500"
+          : "bg-white/5 text-gray-300 hover:bg-red-600/10 hover:border-red-500/50 hover:text-white"
+      }
+    `}
+  >
+    {genre.name}
+  </button>
+
+))}
+
+  </div>
 
 </div>
-
-
-
-
-
-<FaBell
-
-onClick={()=>navigate("/notifications")}
-
-className="
-text-xl
-cursor-pointer
-hover:text-[#E50914]
-transition
-"
-
-/>
-
-
-
-<FaUserCircle
-
-onClick={()=>navigate("/profile")}
-
-className="
-text-3xl
-cursor-pointer
-hover:text-[#E50914]
-"
-
-/>
-
-
-</div>
-
-
-
-</nav>
-
-
-
-
-
-
-
 {/* HERO */}
 
 
@@ -620,7 +485,7 @@ bg-center
 
 style={{
 
-backgroundImage:
+backgroundImage: trending[0] ?
 
 `
 linear-gradient(
@@ -629,9 +494,12 @@ to right,
 transparent
 ),
 url(
-https://image.tmdb.org/t/p/original/8YFL5QQVPy3AgrEQxNYVSgiPEbe.jpg
+https://image.tmdb.org/t/p/original${trending[0]?.backdrop_path}
 )
 `
+
+:
+"none"
 
 }}
 
@@ -649,7 +517,7 @@ text-6xl
 font-bold
 ">
 
-Avengers Endgame
+{trending[0]?.title}
 
 </h1>
 
@@ -661,7 +529,7 @@ text-lg
 text-gray-300
 ">
 
-Experience movies, series and blockbuster entertainment with CineX.
+{trending[0]?.overview}
 
 </p>
 
@@ -678,6 +546,16 @@ gap-4
 
 <button
 
+onClick={async () => {
+  const trailer = await getMovieTrailer(trending[0]?.id);
+
+  if (!trailer) return;
+
+  const url = `https://www.youtube.com/watch?v=${trailer.key}`;
+
+  window.open(url, "_blank");
+}}
+
 className="
 flex
 items-center
@@ -692,14 +570,11 @@ hover:bg-[#B20710]
 
 >
 
-
 <FaPlay/>
 
-Watch Now
-
+Watch Trailer
 
 </button>
-
 
 
 
@@ -739,31 +614,20 @@ My List
 </section>
 
 
-
-
-
-
-
-
 <MovieSection
-
 title="Trending Now"
-
-data={movies.slice(0,4)}
-
+data={trending}
 />
-
-
-
 
 <MovieSection
-
 title="Popular Movies"
-
-data={movies.slice(4,8)}
-
+data={popular}
 />
 
+<MovieSection
+title="Top Rated"
+data={topRated}
+/>
 
 
 </div>

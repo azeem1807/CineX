@@ -13,6 +13,8 @@ const userRoutes = require("./routes/userRoutes");
 const favoriteRoutes = require("./routes/favoriteRoutes");
 const watchlistRoutes = require("./routes/watchlistRoutes");
 const aiRoutes = require("./routes/aiRoutes");
+const notificationRoutes =
+require("./routes/notificationRoutes");
 
 
 const app = express();
@@ -28,6 +30,10 @@ app.use("/api/user", userRoutes);
 app.use("/api/favorites", favoriteRoutes);
 app.use("/api/watchlist", watchlistRoutes);
 app.use("/api/ai", aiRoutes);
+app.use(
+"/api/notifications",
+notificationRoutes
+);
 
 
 // Home Route

@@ -1,12 +1,14 @@
-import { BrowserRouter, Routes, Route } from "react-router-dom";
+import { Routes, Route } from "react-router-dom";
 
 import Login from "../pages/Login.jsx";
+import ForgotPassword from "../pages/ForgotPassword";
 import Register from "../pages/Register.jsx";
 import Home from "../pages/Home.jsx";
 import Search from "../pages/Search.jsx";
 import MovieDetails from "../pages/MovieDetails.jsx";
 import Watchlist from "../pages/Watchlist.jsx";
 import Profile from "../pages/Profile";
+import EditProfile from "../pages/EditProfile";
 import Favorites from "../pages/Favorites";
 import NotFound from "../pages/NotFound";
 import AIRecommendations from "../pages/AIRecommendations";
@@ -14,18 +16,19 @@ import Notifications from "../pages/Notifications";
 
 
 function AppRoutes() {
+return (
 
-  return (
-
-    <BrowserRouter>
-
-      <Routes>
+  <Routes>
 
         <Route
           path="/"
           element={<Login />}
         />
-
+   
+   <Route 
+path="/forgot-password"
+element={<ForgotPassword />}
+/>
 
         <Route
           path="/register"
@@ -59,6 +62,8 @@ function AppRoutes() {
   path="/profile"
   element={<Profile />}
 />
+
+<Route path="/edit-profile" element={<EditProfile />} />
 <Route
  path="/favorites"
  element={<Favorites />}
@@ -76,9 +81,7 @@ element={<Notifications />}
 
       </Routes>
 
-    </BrowserRouter>
-
-  );
+);
 
 }
 

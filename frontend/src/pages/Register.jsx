@@ -5,7 +5,8 @@ import {
 } from "react-icons/fa";
 
 import { useNavigate } from "react-router-dom";
-
+import { registerUser } from "../services/authService";
+import toast from "react-hot-toast";
 
 const Register = () => {
 
@@ -13,10 +14,88 @@ const Register = () => {
 const [showPassword,setShowPassword] = useState(false);
 
 const [showConfirmPassword,setShowConfirmPassword] = useState(false);
+const [name, setName] = useState("");
+const [email, setEmail] = useState("");
+const [password, setPassword] = useState("");
+const [confirmPassword, setConfirmPassword] = useState("");
+const [agreeTerms, setAgreeTerms] = useState(false);
+
+const [loading, setLoading] = useState(false);
+const [errors, setErrors] = useState({});
+const [apiError, setApiError] = useState("");
 
 
 const navigate = useNavigate();
 
+const validate = () => {
+  const newErrors = {};
+
+  if (!name.trim()) {
+    newErrors.name = "Full name is required";
+  }
+
+  if (!email.trim()) {
+    newErrors.email = "Email is required";
+  } else if (!/\S+@\S+\.\S+/.test(email)) {
+    newErrors.email = "Invalid email address";
+  }
+
+  if (!password) {
+    newErrors.password = "Password is required";
+  } else if (password.length < 6) {
+    newErrors.password = "Password must be at least 6 characters";
+  }
+
+  if (!confirmPassword) {
+    newErrors.confirmPassword = "Please confirm your password";
+  } else if (password !== confirmPassword) {
+    newErrors.confirmPassword = "Passwords do not match";
+  }
+
+  if (!agreeTerms) {
+    newErrors.terms = "Please accept Terms & Conditions";
+  }
+
+  setErrors(newErrors);
+
+  return Object.keys(newErrors).length === 0;
+};
+
+const handleSubmit = async (e) => {
+  e.preventDefault();
+
+  if (!validate()) return;
+
+  setLoading(true);
+  setApiError("");
+
+  try {
+    const { data } = await registerUser({
+      name: name.trim(),
+      email: email.trim(),
+      password,
+    });
+
+   if (data.success) {
+
+  toast.success("Account created successfully!");
+
+  setTimeout(() => {
+    navigate("/");
+  }, 1500);
+
+}
+  } catch (err) {
+    const message =
+  err.response?.data?.message || "Registration failed";
+
+setApiError(message);
+
+toast.error(message);
+  } finally {
+    setLoading(false);
+  }
+};
 
 
 return (
@@ -78,9 +157,6 @@ backdrop-blur-lg
 ">
 
 
-
-
-
 {/* Logo */}
 
 <div className="
@@ -118,11 +194,14 @@ Create your CineX account
 
 
 </div>
-
-
-
-
-
+{/* API Error */}
+{apiError && (
+  <div className="mb-4 rounded-lg border border-red-500/30 bg-red-500/10 p-3 text-center text-sm text-red-400">
+    {apiError}
+  </div>
+)}
+<form onSubmit={handleSubmit}>
+  
 
 
 {/* Full Name */}
@@ -143,10 +222,10 @@ Full Name
 
 
 <input
-
-type="text"
-
-placeholder="Enter your name"
+  type="text"
+  placeholder="Enter your name"
+  value={name}
+  onChange={(e) => setName(e.target.value)}
 
 className="
 w-full
@@ -162,15 +241,14 @@ focus:border-[#E50914]
 "
 
  />
+ {errors.name && (
+  <p className="mt-1 text-xs text-red-500">
+    {errors.name}
+  </p>
+)}
 
 
 </div>
-
-
-
-
-
-
 
 {/* Email */}
 
@@ -190,10 +268,10 @@ Email
 
 
 <input
-
-type="email"
-
-placeholder="Enter your email"
+  type="email"
+  placeholder="Enter your email"
+  value={email}
+  onChange={(e) => setEmail(e.target.value)}
 
 className="
 w-full
@@ -210,13 +288,12 @@ focus:border-[#E50914]
 
  />
 
-
+{errors.email && (
+  <p className="mt-1 text-xs text-red-500">
+    {errors.email}
+  </p>
+)}
 </div>
-
-
-
-
-
 
 
 {/* Password */}
@@ -235,16 +312,13 @@ Password
 
 </label>
 
-
-
 <div className="relative">
 
-
 <input
-
-type={showPassword ? "text" : "password"}
-
-placeholder="Create password"
+  type={showPassword ? "text" : "password"}
+  placeholder="Create password"
+  value={password}
+  onChange={(e) => setPassword(e.target.value)}
 
 className="
 w-full
@@ -262,7 +336,11 @@ focus:border-[#E50914]
 
 />
 
-
+{errors.password && (
+  <p className="mt-1 text-xs text-red-500">
+    {errors.password}
+  </p>
+)}
 
 <button
 
@@ -298,11 +376,6 @@ showPassword
 </div>
 
 
-
-
-
-
-
 {/* Confirm Password */}
 
 
@@ -320,22 +393,13 @@ Confirm Password
 
 </label>
 
-
-
 <div className="relative">
 
-
 <input
-
-type={
-showConfirmPassword
-?
-"text"
-:
-"password"
-}
-
-placeholder="Confirm password"
+  type={showConfirmPassword ? "text" : "password"}
+  placeholder="Confirm password"
+  value={confirmPassword}
+  onChange={(e) => setConfirmPassword(e.target.value)}
 
 className="
 w-full
@@ -354,7 +418,11 @@ focus:border-[#E50914]
 />
 
 
-
+{errors.confirmPassword && (
+  <p className="mt-1 text-xs text-red-500">
+    {errors.confirmPassword}
+  </p>
+)}
 
 <button
 
@@ -395,12 +463,6 @@ showConfirmPassword
 </div>
 
 
-
-
-
-
-
-
 {/* Terms */}
 
 <div className="mb-6">
@@ -415,22 +477,24 @@ text-gray-400
 ">
 
 
-<input type="checkbox"/>
+<input
+  type="checkbox"
+  checked={agreeTerms}
+  onChange={(e) => setAgreeTerms(e.target.checked)}
+/>
 
 
 I agree to Terms & Conditions
 
 
 </label>
-
+{errors.terms && (
+  <p className="mt-2 text-xs text-red-500">
+    {errors.terms}
+  </p>
+)}
 
 </div>
-
-
-
-
-
-
 
 
 {/* Create Account Button */}
@@ -438,8 +502,8 @@ I agree to Terms & Conditions
 
 <button
 
-onClick={()=>navigate("/")}
-
+type="submit"
+disabled={loading}
 className="
 w-full
 h-12
@@ -453,12 +517,11 @@ hover:bg-[#B20710]
 
 >
 
-Create Account
+{loading ? "Creating Account..." : "Create Account"}
 
 </button>
 
-
-
+</form>
 
 
 

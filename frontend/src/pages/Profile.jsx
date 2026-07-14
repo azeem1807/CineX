@@ -1,5 +1,6 @@
 import { useNavigate } from "react-router-dom";
-
+import { useState, useEffect } from "react";
+import Navbar from "../components/Navbar";
 import {
   FaUserCircle,
   FaHeart,
@@ -15,7 +16,16 @@ const Profile = () => {
 
 const navigate = useNavigate();
 
+const [user,setUser] = useState(null);
 
+useEffect(()=>{
+
+const storedUser =
+JSON.parse(localStorage.getItem("user"));
+
+setUser(storedUser);
+
+},[]);
 
 const watchlist =
 JSON.parse(localStorage.getItem("watchlist")) || [];
@@ -25,27 +35,30 @@ const favorites =
 JSON.parse(localStorage.getItem("favorites")) || [];
 
 
-
 const logout = () => {
 
-localStorage.clear();
+localStorage.removeItem("token");
+
+localStorage.removeItem("user");
 
 navigate("/");
 
 };
 
-
-
-
 return (
 
-<div className="
+<div
+className="
 min-h-screen
 bg-[#141414]
 text-white
-px-6
-py-8
 ">
+
+<Navbar
+ user={user}
+/>
+
+<div className="max-w-6xl mx-auto px-6 pt-24 pb-10">
 
 
 
@@ -114,23 +127,29 @@ relative
 
 
 <img
-  src="https://images.unsplash.com/photo-1497366754035-f200968a6e72"
-  alt="profile"
-  className="
-  absolute
-  left-1/2
-  bottom-[-60px]
-  transform
-  -translate-x-1/2
-  w-36
-  h-36
-  rounded-full
-  border-8
-  border-[#141414]
-  object-cover
-  "
-/>
 
+src={
+user?.profilePic ||
+"https://cdn-icons-png.flaticon.com/512/149/149071.png"
+}
+
+alt="profile"
+
+className="
+absolute
+left-1/2
+bottom-[-60px]
+transform
+-translate-x-1/2
+w-36
+h-36
+rounded-full
+border-8
+border-[#141414]
+object-cover
+"
+
+/>
 
 </div>
 
@@ -158,10 +177,9 @@ text-4xl
 font-extrabold
 ">
 
-Jahnavi
+{user?.name || "User"}
 
 </h1>
-
 
 
 <p className="
@@ -169,15 +187,13 @@ mt-2
 text-gray-400
 ">
 
-jaanunemani@gmail.com
+{user?.email}
 
 </p>
 
-
-
-
-
 <button
+
+onClick={()=>navigate("/edit-profile")}
 
 className="
 mt-5
@@ -461,21 +477,13 @@ Logout
 </button>
 
 
-
-
-
+</div>
 
 </div>
 
 
 
-
-
-
 </div>
-
-
-
 </div>
 
 
